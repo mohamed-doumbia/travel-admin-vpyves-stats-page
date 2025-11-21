@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Clients - Travel Admin</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/r-3.0.3/datatables.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.bootstrap5.min.css" rel="stylesheet">
+   
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-plane-departure"></i>
+            <span>Travel Admin</span>
+        </div>
+        
+         <nav class="nav-menu">
+            <a href="dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="reservations.html" class="nav-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Réservations</span>
+            </a>
+            <a href="clients.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Clients</span>
+            </a>
+            <a href="vol.html" class="nav-item">
+                <i class="fas fa-plane"></i>
+                <span>Vols</span>
+            </a>
+            <a href="paiements.html" class="nav-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Paiements</span>
+            </a>
+            <a href="statistiques.html" class="nav-item active">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistiques</span>
+            </a>
+            <a href=parametres.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Gestion des Clients</h1>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Rechercher un client...">
+                </div>
+                
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">12</span>
+                </div>
+                
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Administrateur</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Filtres de Date -->
+            <div class="date-selector">
+                <button class="date-btn" data-range="week">Cette Semaine</button>
+                <button class="date-btn" data-range="month">Ce Mois</button>
+                <button class="date-btn active" data-range="year">Cette Année</button>
+                <button class="date-btn" data-range="all">Tout</button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <!--<div class="action-buttons mb-4">
+                <button class="btn btn-primary" onclick="openAddClientModal()">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Client
+                </button>
+                <button class="btn btn-success" onclick="exportClients()">
+                    <i class="fas fa-file-excel me-2"></i>Exporter Tous
+                </button>
+                <button class="btn btn-info" onclick="openBulkEmailModal()">
+                    <i class="fas fa-envelope me-2"></i>Email Groupé
+                </button>
+            </div>-->
+            
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card blue">
+                    <div class="kpi-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Total Clients</div>
+                        <div class="kpi-value" id="totalClients">1,247</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>15.2% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card green">
+                    <div class="kpi-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Nouveaux Clients</div>
+                        <div class="kpi-value" id="newClients">+89</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12.8% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card orange">
+                    <div class="kpi-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Clients Actifs</div>
+                        <div class="kpi-value" id="activeClients">892</div>
+                        <div class="kpi-trend down">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>2.3% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card purple">
+                    <div class="kpi-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Clients VIP</div>
+                        <div class="kpi-value" id="vipClients">156</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>5.1% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphique 1 - Évolution des Inscriptions -->
+            <div class="charts-row">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Évolution des Inscriptions Clients</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="6months">6 mois</button>
+                            <button class="chart-btn" data-period="1year">1 an</button>
+                            <button class="chart-btn" data-period="2years">2 ans</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="clientGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphique 2 - Répartition par Type -->
+            <div class="charts-row">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Répartition par Type de Client</h3>
+                    </div>
+                    <div class="chart-wrapper chart-wrapper-pie">
+                        <canvas id="clientTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tableau des Clients -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3><i class="bi bi-people-fill me-2"></i>Liste des Clients</h3>
+                </div>
+                <div class="table-container">
+                    <table class="table modern-table" id="clientsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Pays</th>
+                                <th>Type</th>
+                                <th>Réservations</th>
+                                <th>Dépenses</th>
+                                <th>Inscription</th>
+                                <th>Statut</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-client-id="CL-1001" data-phone="+33612345678" data-country="France">
+                                <td>#CL-1001</td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Jean+Dupont&background=3b82f6" alt="">
+                                        <span>Jean Dupont</span>
+                                    </div>
+                                </td>
+                                <td>jean.dupont@email.com</td>
+                                <td>+33 6 12 34 56 78</td>
+                                <td>🇫🇷 France</td>
+                                <td><span class="badge-type vip">VIP</span></td>
+                                <td class="text-center">24</td>
+                                <td class="text-success fw-bold">18,450€</td>
+                                <td>15 Jan 2023</td>
+                                <td><span class="status-client active">Actif</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openActionModal('CL-1001')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-client-id="CL-1002" data-phone="+33698765432" data-country="France">
+                                <td>#CL-1002</td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Marie+Martin&background=10b981" alt="">
+                                        <span>Marie Martin</span>
+                                    </div>
+                                </td>
+                                <td>marie.martin@email.com</td>
+                                <td>+33 6 98 76 54 32</td>
+                                <td>🇫🇷 France</td>
+                                <td><span class="badge-type standard">Standard</span></td>
+                                <td class="text-center">8</td>
+                                <td class="text-success fw-bold">5,230€</td>
+                                <td>03 Mar 2023</td>
+                                <td><span class="status-client active">Actif</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openActionModal('CL-1002')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-client-id="CL-1003" data-phone="+33645678901" data-country="France">
+                                <td>#CL-1003</td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Pierre+Bernard&background=f59e0b" alt="">
+                                        <span>Pierre Bernard</span>
+                                    </div>
+                                </td>
+                                <td>pierre.bernard@company.com</td>
+                                <td>+33 6 45 67 89 01</td>
+                                <td>🇫🇷 France</td>
+                                <td><span class="badge-type pro">Professionnel</span></td>
+                                <td class="text-center">42</td>
+                                <td class="text-success fw-bold">32,890€</td>
+                                <td>12 Fév 2022</td>
+                                <td><span class="status-client active">Actif</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openActionModal('CL-1003')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-client-id="CL-1004" data-phone="+22507123456" data-country="Côte d'Ivoire">
+                                <td>#CL-1004</td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Kouassi+Yao&background=ef4444" alt="">
+                                        <span>Kouassi Yao</span>
+                                    </div>
+                                </td>
+                                <td>kouassi.yao@email.com</td>
+                                <td>+225 07 12 34 56</td>
+                                <td>🇨🇮 Côte d'Ivoire</td>
+                                <td><span class="badge-type standard">Standard</span></td>
+                                <td class="text-center">5</td>
+                                <td class="text-success fw-bold">2,380€</td>
+                                <td>18 Avr 2024</td>
+                                <td><span class="status-client active">Actif</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openActionModal('CL-1004')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-client-id="CL-1005" data-phone="+22505987654" data-country="Côte d'Ivoire">
+                                <td>#CL-1005</td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Aya+Kone&background=8b5cf6" alt="">
+                                        <span>Aya Koné</span>
+                                    </div>
+                                </td>
+                                <td>aya.kone@email.com</td>
+                                <td>+225 05 98 76 54</td>
+                                <td>🇨🇮 Côte d'Ivoire</td>
+                                <td><span class="badge-type vip">VIP</span></td>
+                                <td class="text-center">12</td>
+                                <td class="text-success fw-bold">8,950€</td>
+                                <td>25 Mai 2023</td>
+                                <td><span class="status-client active">Actif</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openActionModal('CL-1005')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== MODALS ========== -->
+    
+    <!-- Modal Menu Actions -->
+    <div class="modal fade" id="actionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actions Client <span id="actionClientId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-lg" onclick="viewClientDetail()">
+                            <i class="fas fa-eye me-2"></i>Voir Détails
+                        </button>
+                        <button class="btn btn-outline-warning btn-lg" onclick="editClient()">
+                            <i class="fas fa-edit me-2"></i>Modifier Informations
+                        </button>
+                        <button class="btn btn-outline-info btn-lg" onclick="showSmsOptions()">
+                            <i class="fas fa-sms me-2"></i>Envoyer SMS
+                        </button>
+                        <button class="btn btn-outline-success btn-lg" onclick="sendEmail()">
+                            <i class="fas fa-envelope me-2"></i>Envoyer Email
+                        </button>
+                        <button class="btn btn-outline-danger btn-lg" onclick="deleteClient()">
+                            <i class="fas fa-trash me-2"></i>Supprimer Client
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Options SMS (Unique ou Groupé) -->
+    <div class="modal fade" id="smsOptionsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sms me-2"></i>Options d'Envoi SMS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <h5 class="mb-4">Comment souhaitez-vous envoyer le SMS ?</h5>
+                    
+                    <button class="btn btn-lg btn-primary w-100 mb-3" onclick="showSingleSms()">
+                        <i class="fas fa-user me-2"></i>
+                        Envoyer au numéro unique
+                    </button>
+                    
+                    <div class="text-muted my-3">- OU -</div>
+                    
+                    <button class="btn btn-lg btn-success w-100" onclick="showBulkSms()">
+                        <i class="fas fa-users me-2"></i>
+                        Envoi Groupé par Pays
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal SMS Unique -->
+    <div class="modal fade" id="singleSmsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-sms me-2"></i>Envoyer SMS</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <i class="fas fa-phone me-2"></i>Destinataire : 
+                        <strong id="singleSmsPhone"></strong>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label fw-bold">Message à personnaliser</label>
+                        <textarea class="form-control" id="singleSmsMessage" rows="4" maxlength="160" 
+                                  onkeyup="updateCharCount(this, 'singleCharCount')">Bonjour cher client,</textarea>
+                        <div class="sms-counter">
+                            <span id="singleCharCount">21</span>/160 caractères
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="sendSingleSms()">
+                        <i class="fas fa-paper-plane me-2"></i>Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal SMS Groupé - Sélection Pays -->
+    <div class="modal fade" id="bulkSmsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-globe me-2"></i>Envoi Groupé par Pays</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Colonne Pays -->
+                        <div class="col-md-4 border-end">
+                            <h6 class="text-muted mb-3">1. Choisir un pays</h6>
+                            <button class="country-select-btn" onclick="filterClientsByCountry('France', this)">
+                                <i class="bi bi-geo-alt me-2 text-success"></i>🇫🇷 France
+                            </button>
+                            <button class="country-select-btn" onclick="filterClientsByCountry('Côte d\'Ivoire', this)">
+                                <i class="bi bi-geo-alt me-2 text-success"></i>🇨🇮 Côte d'Ivoire
+                            </button>
+                            <button class="country-select-btn" onclick="filterClientsByCountry('Belgique', this)">
+                                <i class="bi bi-geo-alt me-2 text-success"></i>🇧🇪 Belgique
+                            </button>
+                            <button class="country-select-btn" onclick="filterClientsByCountry('Suisse', this)">
+                                <i class="bi bi-geo-alt me-2 text-success"></i>🇨🇭 Suisse
+                            </button>
+                            <button class="country-select-btn" onclick="filterClientsByCountry('all', this)">
+                                <i class="bi bi-globe me-2 text-primary"></i>Tous les pays
+                            </button>
+                        </div>
+                        
+                        <!-- Colonne Sélection Clients -->
+                        <div class="col-md-8">
+                            <h6 class="text-muted mb-3 d-flex justify-content-between">
+                                <span>2. Sélectionner les destinataires</span>
+                                <button class="btn btn-sm btn-link p-0" onclick="toggleAllClients()">Tout cocher</button>
+                            </h6>
+                            
+                            <div class="input-group mb-2">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="searchClientSms" 
+                                       placeholder="Filtrer..." onkeyup="filterClientList()">
+                            </div>
+                            
+                            <div class="scrollable-list" id="clientSmsList">
+                                <div class="text-center text-muted py-5">
+                                    <i class="fas fa-arrow-left me-2"></i>Sélectionnez un pays
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 text-end">
+                                <span class="me-3 fw-bold" id="selectedClientsCount">0 sélectionné(s)</span>
+                                <button class="btn btn-success" onclick="showBulkSmsComposer()" 
+                                        disabled id="btnFinishSelection">
+                                    Terminer <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Composer SMS Groupé -->
+    <div class="modal fade" id="bulkSmsComposerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Rédiger le SMS</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <i class="fas fa-users me-2"></i>À : 
+                        <strong id="bulkSmsRecipients"></strong>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label fw-bold">Message à personnaliser</label>
+                        <textarea class="form-control" id="bulkSmsMessage" rows="5" maxlength="160" 
+                                  onkeyup="updateCharCount(this, 'bulkCharCount')">Bonjour chers clients,</textarea>
+                        <div class="sms-counter">
+                            <span id="bulkCharCount">24</span>/160 caractères
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="backToBulkSelection()">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="sendBulkSms()">
+                        <i class="fas fa-paper-plane me-2"></i>Envoyer à Tous
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Ajouter/Modifier Client -->
+    <div class="modal fade" id="clientModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientModalTitle">Ajouter un Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clientForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Pays <span class="text-danger">*</span></label>
+                                <select class="form-select" id="country" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="France">🇫🇷 France</option>
+                                    <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+                                    <option value="Belgique">🇧🇪 Belgique</option>
+                                    <option value="Suisse">🇨🇭 Suisse</option>
+                                    <option value="Canada">🇨🇦 Canada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ville</label>
+                                <input type="text" class="form-control" id="city">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Type de Client</label>
+                                <select class="form-select" id="clientType">
+                                    <option value="standard">Standard</option>
+                                    <option value="vip">VIP</option>
+                                    <option value="pro">Professionnel</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Statut</label>
+                                <select class="form-select" id="clientStatus">
+                                    <option value="active">Actif</option>
+                                    <option value="inactive">Inactif</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Adresse</label>
+                            <textarea class="form-control" id="address" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="saveClient()">
+                        <i class="fas fa-save me-2"></i>Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Envoyer Email -->
+    <div class="modal fade" id="emailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Envoyer un Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Destinataire: <strong id="emailRecipient"></strong></p>
+                    <div class="mb-3">
+                        <label class="form-label">Sujet</label>
+                        <input type="text" class="form-control" id="emailSubject" placeholder="Objet de l'email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" id="emailMessage" rows="6" placeholder="Votre message ici..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="sendEmailAction()">
+                        <i class="fas fa-paper-plane me-2"></i>Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/r-3.0.3/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+    <script>
+        let currentClientId = '';
+        let selectedSmsClients = [];
+        
+        // Initialisation DataTable
+        $(document).ready(function() {
+            $('#clientsTable').DataTable({
+                scrollX: true,          // Active le défilement horizontal
+                scrollCollapse: true,   // Garde le layout propre
+                fixedColumns: {
+                    left: 0,            // Ne fige rien à gauche
+                    right: 1            // Fige la 1ère colonne en partant de la droite (Actions)
+                },
+                responsive: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-clipboard"></i> Copier',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-spreadsheet"></i> CSV',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-excel"></i> Excel',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-printer"></i> Imprimer',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    'colvis'
+                ],
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+                },
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Tout"]],
+                order: [[0, 'desc']],
+                columnDefs: [
+            { orderable: false, targets: 10 }, // Désactive le tri sur Actions
+            { width: "80px", targets: 10 },    // Force une largeur pour la colonne Actions
+            { className: "text-center", targets: [6, 7, 10] } 
+        ]
+            });
+        });
+        
+        // Graphiques
+        const ctxGrowth = document.getElementById('clientGrowthChart').getContext('2d');
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [{
+                    label: 'Nouveaux Clients',
+                    data: [45, 52, 61, 58, 72, 89, 94, 87, 96, 103, 98, 89],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+        
+        const ctxType = document.getElementById('clientTypeChart').getContext('2d');
+        new Chart(ctxType, {
+            type: 'doughnut',
+            data: {
+                labels: ['Standard', 'VIP', 'Professionnel'],
+                datasets: [{
+                    data: [748, 156, 343],
+                    backgroundColor: ['#3b82f6', '#f59e0b', '#10b981']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+        
+        // ===== FONCTIONS ACTIONS =====
+        
+        function openActionModal(clientId) {
+            currentClientId = clientId;
+            document.getElementById('actionClientId').textContent = '#' + clientId;
+            const modal = new bootstrap.Modal(document.getElementById('actionModal'));
+            modal.show();
+        }
+        
+        function viewClientDetail() {
+            window.location.href = `client-detail.html?id=${currentClientId}`;
+        }
+        
+        function editClient() {
+            bootstrap.Modal.getInstance(document.getElementById('actionModal')).hide();
+            document.getElementById('clientModalTitle').textContent = 'Modifier le Client';
+            const modal = new bootstrap.Modal(document.getElementById('clientModal'));
+            modal.show();
+        }
+        
+        function showSmsOptions() {
+            bootstrap.Modal.getInstance(document.getElementById('actionModal')).hide();
+            const modal = new bootstrap.Modal(document.getElementById('smsOptionsModal'));
+            modal.show();
+        }
+        
+        function sendEmail() {
+            bootstrap.Modal.getInstance(document.getElementById('actionModal')).hide();
+            document.getElementById('emailRecipient').textContent = currentClientId;
+            const modal = new bootstrap.Modal(document.getElementById('emailModal'));
+            modal.show();
+        }
+        
+        function deleteClient() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce client ?')) {
+                alert('Client ' + currentClientId + ' supprimé !');
+                bootstrap.Modal.getInstance(document.getElementById('actionModal')).hide();
+            }
+        }
+        
+        // ===== FONCTIONS SMS =====
+        
+        function showSingleSms() {
+            const row = document.querySelector(`tr[data-client-id="${currentClientId}"]`);
+            const phone = row.getAttribute('data-phone');
+            
+            document.getElementById('singleSmsPhone').textContent = phone;
+            bootstrap.Modal.getInstance(document.getElementById('smsOptionsModal')).hide();
+            
+            const modal = new bootstrap.Modal(document.getElementById('singleSmsModal'));
+            modal.show();
+        }
+        
+        function showBulkSms() {
+            bootstrap.Modal.getInstance(document.getElementById('smsOptionsModal')).hide();
+            selectedSmsClients = [];
+            updateSelectedClientsUI();
+            
+            const modal = new bootstrap.Modal(document.getElementById('bulkSmsModal'));
+            modal.show();
+        }
+        
+        function filterClientsByCountry(country, btn) {
+            $('.country-select-btn').removeClass('active');
+            $(btn).addClass('active');
+            
+            let clients = [];
+            $('#clientsTable tbody tr').each(function() {
+                const rowCountry = $(this).attr('data-country');
+                const clientId = $(this).attr('data-client-id');
+                const phone = $(this).attr('data-phone');
+                const name = $(this).find('.customer-cell span').text();
+                
+                if (country === 'all' || rowCountry === country) {
+                    clients.push({ id: clientId, name: name, phone: phone });
+                }
+            });
+            
+            renderClientsList(clients);
+        }
+        
+        function renderClientsList(clients) {
+            let html = '';
+            if (clients.length === 0) {
+                html = '<div class="text-center text-muted p-3">Aucun client trouvé.</div>';
+            } else {
+                clients.forEach(client => {
+                    html += `
+                    <div class="form-check border-bottom py-2">
+                        <input class="form-check-input client-sms-checkbox" type="checkbox" 
+                               value="${client.phone}" id="chk_${client.id}" 
+                               data-client-name="${client.name}" onchange="updateSelectedClientsUI()">
+                        <label class="form-check-label w-100" for="chk_${client.id}" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">${client.name}</span>
+                                <span class="text-muted small">${client.phone}</span>
+                            </div>
+                        </label>
+                    </div>`;
+                });
+            }
+            document.getElementById('clientSmsList').innerHTML = html;
+        }
+        
+        function toggleAllClients() {
+            const checkboxes = document.querySelectorAll('.client-sms-checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+            updateSelectedClientsUI();
+        }
+        
+        function updateSelectedClientsUI() {
+            const count = document.querySelectorAll('.client-sms-checkbox:checked').length;
+            document.getElementById('selectedClientsCount').textContent = count + ' sélectionné(s)';
+            document.getElementById('btnFinishSelection').disabled = count === 0;
+        }
+        
+        function filterClientList() {
+            const term = document.getElementById('searchClientSms').value.toLowerCase();
+            document.querySelectorAll('.form-check').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(term) ? 'block' : 'none';
+            });
+        }
+        
+        function showBulkSmsComposer() {
+            selectedSmsClients = [];
+            document.querySelectorAll('.client-sms-checkbox:checked').forEach(cb => {
+                selectedSmsClients.push(cb.value);
+            });
+            
+            document.getElementById('bulkSmsRecipients').textContent = 
+                selectedSmsClients.length + ' contacts sélectionnés';
+            
+            bootstrap.Modal.getInstance(document.getElementById('bulkSmsModal')).hide();
+            const modal = new bootstrap.Modal(document.getElementById('bulkSmsComposerModal'));
+            modal.show();
+        }
+        
+        function backToBulkSelection() {
+            bootstrap.Modal.getInstance(document.getElementById('bulkSmsComposerModal')).hide();
+            const modal = new bootstrap.Modal(document.getElementById('bulkSmsModal'));
+            modal.show();
+        }
+        
+        function sendSingleSms() {
+            const message = document.getElementById('singleSmsMessage').value;
+            if (message.trim() === '') {
+                alert('Le message ne peut pas être vide.');
+                return;
+            }
+            alert('SMS envoyé avec succès !');
+            bootstrap.Modal.getInstance(document.getElementById('singleSmsModal')).hide();
+        }
+        
+        function sendBulkSms() {
+            const message = document.getElementById('bulkSmsMessage').value;
+            if (message.trim() === '') {
+                alert('Le message ne peut pas être vide.');
+                return;
+            }
+            alert(`SMS envoyé à ${selectedSmsClients.length} contacts !`);
+            bootstrap.Modal.getInstance(document.getElementById('bulkSmsComposerModal')).hide();
+        }
+        
+        function updateCharCount(textarea, counterId) {
+            document.getElementById(counterId).textContent = textarea.value.length;
+        }
+        
+        // ===== AUTRES FONCTIONS =====
+        
+        function openAddClientModal() {
+            document.getElementById('clientModalTitle').textContent = 'Ajouter un Client';
+            document.getElementById('clientForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('clientModal'));
+            modal.show();
+        }
+        
+        function saveClient() {
+            alert('Client enregistré avec succès !');
+            bootstrap.Modal.getInstance(document.getElementById('clientModal')).hide();
+        }
+        
+        function sendEmailAction() {
+            alert('Email envoyé avec succès !');
+            bootstrap.Modal.getInstance(document.getElementById('emailModal')).hide();
+        }
+        
+        function exportClients() {
+            alert('Export en cours...');
+        }
+        
+        function openBulkEmailModal() {
+            alert('Fonctionnalité Email Groupé à venir');
+        }
+        
+        // Menu Toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Filtres de période
+        document.querySelectorAll('.date-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const range = this.getAttribute('data-range');
+                console.log('Filtre appliqué:', range);
+                // Ici tu peux charger les données filtrées
+            });
+        });
+    </script>
+    
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-buttons .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        /* Badges Type Client */
+        .badge-type {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-type.standard {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-type.vip {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-type.pro {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        /* Statut Client */
+        .status-client {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-client.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-client.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* SMS Counter */
+        .sms-counter {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        /* Country Select Buttons */
+        .country-select-btn {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0.5rem;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .country-select-btn:hover,
+        .country-select-btn.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        /* Scrollable List */
+        .scrollable-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+
+
+        /* ========== FIX COLONNE ACTIONS ========== */
+
+/* Assure que la colonne Actions a une largeur fixe */
+#clientsTable thead th:last-child,
+#clientsTable tbody td:last-child {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+/* Bouton Actions bien visible */
+.action-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 8px 12px !important;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.3s;
+    font-size: 16px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Assure que le tableau ne coupe pas les colonnes */
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+}
+
+table.dataTable {
+    width: 100% !important;
+    table-layout: auto !important;
+}
+
+/* Colonnes avec largeurs optimales */
+#clientsTable thead th:nth-child(1),
+#clientsTable tbody td:nth-child(1) {
+    width: 80px !important;
+    min-width: 80px !important;
+}
+
+#clientsTable thead th:nth-child(2),
+#clientsTable tbody td:nth-child(2) {
+    min-width: 180px !important;
+}
+
+#clientsTable thead th:nth-child(3),
+#clientsTable tbody td:nth-child(3) {
+    min-width: 200px !important;
+}
+
+#clientsTable thead th:nth-child(4),
+#clientsTable tbody td:nth-child(4) {
+    min-width: 140px !important;
+}
+
+#clientsTable thead th:nth-child(5),
+#clientsTable tbody td:nth-child(5) {
+    width: 120px !important;
+    min-width: 120px !important;
+}
+
+#clientsTable thead th:nth-child(6),
+#clientsTable tbody td:nth-child(6) {
+    width: 110px !important;
+    min-width: 110px !important;
+}
+
+#clientsTable thead th:nth-child(7),
+#clientsTable tbody td:nth-child(7) {
+    width: 100px !important;
+    min-width: 100px !important;
+    text-align: center !important;
+}
+
+#clientsTable thead th:nth-child(8),
+#clientsTable tbody td:nth-child(8) {
+    width: 110px !important;
+    min-width: 110px !important;
+}
+
+#clientsTable thead th:nth-child(9),
+#clientsTable tbody td:nth-child(9) {
+    width: 120px !important;
+    min-width: 120px !important;
+}
+
+#clientsTable thead th:nth-child(10),
+#clientsTable tbody td:nth-child(10) {
+    width: 100px !important;
+    min-width: 100px !important;
+}
+
+/* Responsive - Sur mobile, la colonne Actions reste visible */
+@media (max-width: 768px) {
+    #clientsTable thead th:last-child,
+    #clientsTable tbody td:last-child {
+        width: 80px !important;
+        min-width: 80px !important;
+    }
+    
+    .action-btn {
+        padding: 6px 10px !important;
+        font-size: 14px !important;
+    }
+}
+
+/* Fix pour DataTables Responsive */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #667eea;
+}
+
+/* Assure que le scroll horizontal fonctionne bien */
+.dataTables_wrapper {
+    overflow-x: visible;
+}
+
+.dataTables_scrollBody {
+    overflow-x: auto !important;
+}
+    </style>
+</body>
+</html>

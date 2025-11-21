@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Réservations - Travel Admin</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/r-3.0.3/datatables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/fixedcolumns/5.0.1/css/fixedColumns.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-plane-departure"></i>
+            <span>Travel Admin</span>
+        </div>
+        
+         <nav class="nav-menu">
+            <a href="dashboard.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="reservations.html" class="nav-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Réservations</span>
+            </a>
+            <a href="clients.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Clients</span>
+            </a>
+            <a href="vol.html" class="nav-item">
+                <i class="fas fa-plane"></i>
+                <span>Vols</span>
+            </a>
+            <a href="paiements.html" class="nav-item">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Paiements</span>
+            </a>
+            <a href="statistiques.html" class="nav-item active">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistiques</span>
+            </a>
+            <a href="parametres.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Gestion des Réservations</h1>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Rechercher une réservation...">
+                </div>
+                
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">12</span>
+                </div>
+                
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=667eea&color=fff" alt="User">
+                    <div class="user-info">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Administrateur</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Filtres Avancés -->
+            <div class="filters-section mb-4">
+                <div class="row g-3">
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><i class="fas fa-calendar me-2"></i>Période</label>
+                        <select class="form-select" id="filterPeriod" onchange="applyFilters()">
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week" selected>Cette Semaine</option>
+                            <option value="month">Ce Mois</option>
+                            <option value="year">Cette Année</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><i class="fas fa-check-circle me-2"></i>Statut</label>
+                        <select class="form-select" id="filterStatus" onchange="applyFilters()">
+                            <option value="all">Tous</option>
+                            <option value="Confirmée">Confirmée</option>
+                            <option value="En attente">En attente</option>
+                            <option value="Annulée">Annulée</option>
+                            <option value="Terminée">Terminée</option>
+                            <option value="Check-in fait">Check-in fait</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><i class="fas fa-map-marker-alt me-2"></i>Destination</label>
+                        <select class="form-select" id="filterDestination" onchange="applyFilters()">
+                            <option value="all">Toutes</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Amérique">Amérique</option>
+                            <option value="Asie">Asie</option>
+                            <option value="Afrique">Afrique</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><i class="fas fa-chair me-2"></i>Classe</label>
+                        <select class="form-select" id="filterClass" onchange="applyFilters()">
+                            <option value="all">Toutes</option>
+                            <option value="Économique">Économique</option>
+                            <option value="Business">Business</option>
+                            <option value="Première">Première</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><i class="fas fa-building me-2"></i>Compagnie</label>
+                        <select class="form-select" id="filterCompany" onchange="applyFilters()">
+                            <option value="all">Toutes</option>
+                            <option value="Air France">Air France</option>
+                            <option value="Emirates">Emirates</option>
+                            <option value="Lufthansa">Lufthansa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-secondary w-100" onclick="resetFilters()" style="margin-top: 32px;">
+                            <i class="fas fa-redo me-2"></i>Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons mb-4">
+                <button class="btn btn-success" onclick="exportBookings()">
+                    <i class="fas fa-file-excel me-2"></i>Exporter Tous
+                </button>
+                <button class="btn btn-warning" onclick="showPendingBookings()">
+                    <i class="fas fa-clock me-2"></i>En Attente
+                </button>
+                <button class="btn btn-info" onclick="showTodayCheckins()">
+                    <i class="fas fa-check-square me-2"></i>Check-in du Jour
+                </button>
+            </div>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card blue">
+                    <div class="kpi-icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Total Réservations</div>
+                        <div class="kpi-value" id="totalBookings">3,547</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>15.8% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card green">
+                    <div class="kpi-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Confirmées</div>
+                        <div class="kpi-value" id="confirmedBookings">3,124</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>88.1% du total</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card orange">
+                    <div class="kpi-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">En Attente</div>
+                        <div class="kpi-value" id="pendingBookings">298</div>
+                        <div class="kpi-trend">
+                            <i class="fas fa-minus"></i>
+                            <span>8.4% du total</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card purple">
+                    <div class="kpi-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="kpi-content">
+                        <div class="kpi-title">Taux Conversion</div>
+                        <div class="kpi-value" id="conversionRate">88.2%</div>
+                        <div class="kpi-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+3.2% vs période précédente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphique 1 - Évolution des Réservations (Courbe) -->
+            <div class="charts-row">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Évolution des Réservations</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="6months">6 mois</button>
+                            <button class="chart-btn" data-period="1year">1 an</button>
+                            <button class="chart-btn" data-period="2years">2 ans</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Row avec 2 graphiques -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Top 10 Destinations</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="topDestinationsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Répartition par Classe</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="classDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Widgets Alertes -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="alert-widget bg-primary text-white">
+                        <div class="alert-icon"><i class="fas fa-calendar-day"></i></div>
+                        <div class="alert-content">
+                            <h4>42</h4>
+                            <p>Réservations Aujourd'hui</p>
+                            <small>Montant: 48,500€</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="alert-widget bg-success text-white">
+                        <div class="alert-icon"><i class="fas fa-plane-departure"></i></div>
+                        <div class="alert-content">
+                            <h4>87</h4>
+                            <p>Check-in Effectués</p>
+                            <small>Sur 120 passagers attendus</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="alert-widget bg-warning text-white">
+                        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="alert-content">
+                            <h4>15</h4>
+                            <p>Alertes à Traiter</p>
+                            <small>Paiements expirés, confirmations</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tableau des Réservations -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3><i class="fas fa-list me-2"></i>Liste des Réservations</h3>
+                </div>
+                <div class="table-container">
+                    <table class="table modern-table" id="bookingsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Vol</th>
+                                <th>Destination</th>
+                                <th>Classe</th>
+                                <th>Siège</th>
+                                <th>Date Vol</th>
+                                <th>Date Réservation</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-booking-id="BK-2847" data-status="Confirmée" data-destination="Amérique" data-class="Business" data-company="Air France">
+                                <td><strong>#BK-2847</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Jean+Dupont&background=3b82f6" alt="">
+                                        <span>Jean Dupont</span>
+                                    </div>
+                                </td>
+                                <td><strong>AF-2547</strong></td>
+                                <td>Paris → New York</td>
+                                <td><span class="class-badge business">Business</span></td>
+                                <td><strong>12A</strong></td>
+                                <td>25 Nov - 14:30</td>
+                                <td>20 Nov - 10:15</td>
+                                <td class="text-success fw-bold">2,450€</td>
+                                <td><span class="status-booking confirmed">Confirmée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2847')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2846" data-status="En attente" data-destination="Asie" data-class="Économique" data-company="Emirates">
+                                <td><strong>#BK-2846</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Marie+Martin&background=10b981" alt="">
+                                        <span>Marie Martin</span>
+                                    </div>
+                                </td>
+                                <td><strong>EK-0156</strong></td>
+                                <td>Lyon → Dubaï</td>
+                                <td><span class="class-badge economy">Économique</span></td>
+                                <td><strong>28C</strong></td>
+                                <td>26 Nov - 22:15</td>
+                                <td>21 Nov - 16:30</td>
+                                <td class="text-success fw-bold">1,250€</td>
+                                <td><span class="status-booking pending">En attente</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2846')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2845" data-status="Check-in fait" data-destination="Europe" data-class="Première" data-company="Lufthansa">
+                                <td><strong>#BK-2845</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Pierre+Bernard&background=f59e0b" alt="">
+                                        <span>Pierre Bernard</span>
+                                    </div>
+                                </td>
+                                <td><strong>LH-1234</strong></td>
+                                <td>Paris → Berlin</td>
+                                <td><span class="class-badge first">Première</span></td>
+                                <td><strong>1A</strong></td>
+                                <td>24 Nov - 09:45</td>
+                                <td>18 Nov - 14:20</td>
+                                <td class="text-success fw-bold">3,890€</td>
+                                <td><span class="status-booking checkedin">Check-in fait</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2845')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2844" data-status="Annulée" data-destination="Europe" data-class="Économique" data-company="Air France">
+                                <td><strong>#BK-2844</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Sophie+Dubois&background=ef4444" alt="">
+                                        <span>Sophie Dubois</span>
+                                    </div>
+                                </td>
+                                <td><strong>AF-5623</strong></td>
+                                <td>Nice → Londres</td>
+                                <td><span class="class-badge economy">Économique</span></td>
+                                <td><strong>-</strong></td>
+                                <td>28 Nov - 11:20</td>
+                                <td>22 Nov - 09:10</td>
+                                <td class="text-danger fw-bold">320€</td>
+                                <td><span class="status-booking cancelled">Annulée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2844')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2843" data-status="Terminée" data-destination="Europe" data-class="Business" data-company="Air France">
+                                <td><strong>#BK-2843</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Luc+Petit&background=8b5cf6" alt="">
+                                        <span>Luc Petit</span>
+                                    </div>
+                                </td>
+                                <td><strong>AF-1890</strong></td>
+                                <td>Toulouse → Barcelone</td>
+                                <td><span class="class-badge business">Business</span></td>
+                                <td><strong>8B</strong></td>
+                                <td>20 Nov - 15:30</td>
+                                <td>15 Nov - 18:45</td>
+                                <td class="text-success fw-bold">650€</td>
+                                <td><span class="status-booking completed">Terminée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2843')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2842" data-status="Confirmée" data-destination="Asie" data-class="Économique" data-company="Emirates">
+                                <td><strong>#BK-2842</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Isabelle+Moreau&background=ec4899" alt="">
+                                        <span>Isabelle Moreau</span>
+                                    </div>
+                                </td>
+                                <td><strong>EK-0234</strong></td>
+                                <td>Paris → Tokyo</td>
+                                <td><span class="class-badge economy">Économique</span></td>
+                                <td><strong>32F</strong></td>
+                                <td>27 Nov - 18:45</td>
+                                <td>22 Nov - 11:20</td>
+                                <td class="text-success fw-bold">980€</td>
+                                <td><span class="status-booking confirmed">Confirmée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2842')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2841" data-status="En attente" data-destination="Afrique" data-class="Business" data-company="Air France">
+                                <td><strong>#BK-2841</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Thomas+Blanc&background=14b8a6" alt="">
+                                        <span>Thomas Blanc</span>
+                                    </div>
+                                </td>
+                                <td><strong>AF-7821</strong></td>
+                                <td>Paris → Abidjan</td>
+                                <td><span class="class-badge business">Business</span></td>
+                                <td><strong>6D</strong></td>
+                                <td>29 Nov - 23:55</td>
+                                <td>23 Nov - 14:10</td>
+                                <td class="text-success fw-bold">1,890€</td>
+                                <td><span class="status-booking pending">En attente</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2841')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2840" data-status="Confirmée" data-destination="Europe" data-class="Économique" data-company="Lufthansa">
+                                <td><strong>#BK-2840</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Emma+Rousseau&background=f97316" alt="">
+                                        <span>Emma Rousseau</span>
+                                    </div>
+                                </td>
+                                <td><strong>LH-5643</strong></td>
+                                <td>Lyon → Munich</td>
+                                <td><span class="class-badge economy">Économique</span></td>
+                                <td><strong>22B</strong></td>
+                                <td>26 Nov - 07:30</td>
+                                <td>21 Nov - 09:45</td>
+                                <td class="text-success fw-bold">195€</td>
+                                <td><span class="status-booking confirmed">Confirmée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2840')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2839" data-status="Check-in fait" data-destination="Amérique" data-class="Première" data-company="Air France">
+                                <td><strong>#BK-2839</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Nicolas+Faure&background=6366f1" alt="">
+                                        <span>Nicolas Faure</span>
+                                    </div>
+                                </td>
+                                <td><strong>AF-3456</strong></td>
+                                <td>Paris → Los Angeles</td>
+                                <td><span class="class-badge first">Première</span></td>
+                                <td><strong>2B</strong></td>
+                                <td>25 Nov - 11:15</td>
+                                <td>17 Nov - 16:20</td>
+                                <td class="text-success fw-bold">6,750€</td>
+                                <td><span class="status-booking checkedin">Check-in fait</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2839')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2838" data-status="Confirmée" data-destination="Europe" data-class="Business" data-company="Lufthansa">
+                                <td><strong>#BK-2838</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Camille+Girard&background=a855f7" alt="">
+                                        <span>Camille Girard</span>
+                                    </div>
+                                </td>
+                                <td><strong>LH-9087</strong></td>
+                                <td>Nice → Francfort</td>
+                                <td><span class="class-badge business">Business</span></td>
+                                <td><strong>9C</strong></td>
+                                <td>28 Nov - 13:20</td>
+                                <td>23 Nov - 10:30</td>
+                                <td class="text-success fw-bold">580€</td>
+                                <td><span class="status-booking confirmed">Confirmée</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2838')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr data-booking-id="BK-2837" data-status="En attente" data-destination="Asie" data-class="Économique" data-company="Emirates">
+                                <td><strong>#BK-2837</strong></td>
+                                <td>
+                                    <div class="customer-cell">
+                                        <img src="https://ui-avatars.com/api/?name=Julien+Mercier&background=0ea5e9" alt="">
+                                        <span>Julien Mercier</span>
+                                    </div>
+                                </td>
+                                <td><strong>EK-7654</strong></td>
+                                <td>Lyon → Singapour</td>
+                                <td><span class="class-badge economy">Économique</span></td>
+                                <td><strong>45A</strong></td>
+                                <td>30 Nov - 22:00</td>
+                                <td>24 Nov - 15:50</td>
+                                <td class="text-success fw-bold">1,450€</td>
+                                <td><span class="status-booking pending">En attente</span></td>
+                                <td class="text-center">
+                                    <button class="action-btn" onclick="openBookingActionModal('BK-2837')" title="Actions">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ========== MODALS ========== -->
+    
+    <!-- Modal Menu Actions Réservation -->
+    <div class="modal fade" id="bookingActionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actions Réservation <span id="actionBookingId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-lg" onclick="viewBookingDetails()">
+                            <i class="fas fa-eye me-2"></i>Voir Détails Complets
+                        </button>
+                        <button class="btn btn-outline-warning btn-lg" onclick="editBooking()">
+                            <i class="fas fa-edit me-2"></i>Modifier Réservation
+                        </button>
+                        <button class="btn btn-outline-info btn-lg" onclick="changeSeat()">
+                            <i class="fas fa-chair me-2"></i>Changer de Siège
+                        </button>
+                        <button class="btn btn-outline-success btn-lg" onclick="confirmBooking()">
+                            <i class="fas fa-check-circle me-2"></i>Confirmer Réservation
+                        </button>
+                        <button class="btn btn-outline-primary btn-lg" onclick="doCheckin()">
+                            <i class="fas fa-plane-departure me-2"></i>Faire le Check-in
+                        </button>
+                        <button class="btn btn-outline-secondary btn-lg" onclick="sendTicket()">
+                            <i class="fas fa-envelope me-2"></i>Envoyer Billet par Email
+                        </button>
+                        <button class="btn btn-outline-dark btn-lg" onclick="viewHistory()">
+                            <i class="fas fa-history me-2"></i>Voir Historique
+                        </button>
+                        <button class="btn btn-outline-danger btn-lg" onclick="cancelBooking()">
+                            <i class="fas fa-times-circle me-2"></i>Annuler Réservation
+                        </button>
+                        <button class="btn btn-outline-warning btn-lg" onclick="rebooking()">
+                            <i class="fas fa-redo me-2"></i>Re-booking (Autre Vol)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Détails Réservation -->
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-ticket-alt me-2"></i>Détails de la Réservation <span id="detailBookingId"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Informations Passager -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Informations Passager</h6>
+                            <div class="info-row">
+                                <strong>Nom complet:</strong>
+                                <span id="detailPassengerName">Jean Dupont</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Email:</strong>
+                                <span id="detailEmail">jean.dupont@email.com</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Téléphone:</strong>
+                                <span id="detailPhone">+33 6 12 34 56 78</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>N° Passeport:</strong>
+                                <span id="detailPassport">FR123456789</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Informations Vol -->
+                        <div class="col-md-6">
+                            <h6 class="text-success mb-3"><i class="fas fa-plane me-2"></i>Informations Vol</h6>
+                            <div class="info-row">
+                                <strong>Numéro de vol:</strong>
+                                <span id="detailFlightNumber">AF-2547</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Itinéraire:</strong>
+                                <span id="detailRoute">Paris → New York</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Date & Heure:</strong>
+                                <span id="detailFlightDate">25 Nov 2024 - 14:30</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Classe:</strong>
+                                <span id="detailClass" class="class-badge business">Business</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Siège:</strong>
+                                <span id="detailSeat"><strong>12A</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <!-- Détails Réservation -->
+                        <div class="col-md-12">
+                            <h6 class="text-warning mb-3"><i class="fas fa-info-circle me-2"></i>Détails de la Réservation</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>ID Réservation</strong></td>
+                                            <td><strong>#BK-2847</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Date de réservation</strong></td>
+                                            <td>20 Nov 2024 - 10:15</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Statut</strong></td>
+                                            <td><span class="status-booking confirmed">Confirmée</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Montant</strong></td>
+                                            <td><strong class="text-success fs-5">2,450€</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Mode de paiement</strong></td>
+                                            <td>Carte bancaire (Visa ****4532)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Bagage enregistré</strong></td>
+                                            <td>1 x 23kg</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Bagage cabine</strong></td>
+                                            <td>1 x 10kg</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Assurance voyage</strong></td>
+                                            <td><span class="badge bg-success">Incluse</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Repas spécial</strong></td>
+                                            <td>Végétarien</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <!-- Historique -->
+                        <div class="col-md-12">
+                            <h6 class="text-info mb-3"><i class="fas fa-history me-2"></i>Historique des Modifications</h6>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <span class="text-success">✓</span> <strong>20 Nov 2024 - 10:15</strong> : Réservation créée
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="text-success">✓</span> <strong>20 Nov 2024 - 10:18</strong> : Paiement confirmé
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="text-success">✓</span> <strong>20 Nov 2024 - 10:20</strong> : Billet électronique envoyé
+                                </div>
+                                <div class="timeline-item">
+                                    <span class="text-info">ℹ</span> <strong>21 Nov 2024 - 15:30</strong> : Siège changé de 15C à 12A
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-success" onclick="sendTicket()">
+                        <i class="fas fa-envelope me-2"></i>Envoyer Billet
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Modifier Réservation -->
+    <div class="modal fade" id="editBookingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Modifier la Réservation <span id="editBookingId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBookingForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Prénom</label>
+                                <input type="text" class="form-control" id="editFirstName" value="Jean">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Nom</label>
+                                <input type="text" class="form-control" id="editLastName" value="Dupont">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" class="form-control" id="editEmail" value="jean.dupont@email.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Téléphone</label>
+                                <input type="tel" class="form-control" id="editPhone" value="+33 6 12 34 56 78">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Vol</label>
+                                <select class="form-select" id="editFlightNumber">
+                                    <option value="AF-2547" selected>AF-2547 - Paris → New York</option>
+                                    <option value="EK-0156">EK-0156 - Lyon → Dubaï</option>
+                                    <option value="LH-1234">LH-1234 - Paris → Berlin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Classe</label>
+                                <select class="form-select" id="editClass">
+                                    <option value="Économique">Économique</option>
+                                    <option value="Business" selected>Business</option>
+                                    <option value="Première">Première Classe</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Siège</label>
+                                <input type="text" class="form-control" id="editSeat" value="12A">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Numéro Passeport</label>
+                                <input type="text" class="form-control" id="editPassport" value="FR123456789">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning" onclick="saveBookingEdit()">
+                        <i class="fas fa-save me-2"></i>Enregistrer les Modifications
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Envoyer Billet -->
+    <div class="modal fade" id="sendTicketModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-envelope me-2"></i>Envoyer le Billet Électronique</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sendTicketForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Réservation</label>
+                            <input type="text" class="form-control" id="ticketBookingId" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nom du passager</label>
+                            <input type="text" class="form-control" id="ticketPassengerName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Adresse email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="ticketEmail" value="jean.dupont@email.com" required>
+                            <small class="text-muted">Le billet sera envoyé à cette adresse</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ajouter un message (optionnel)</label>
+                            <textarea class="form-control" id="ticketMessage" rows="3" placeholder="Message personnalisé pour le client..."></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="ticketCopy" checked>
+                            <label class="form-check-label" for="ticketCopy">
+                                M'envoyer une copie
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="processSendTicket()">
+                        <i class="fas fa-paper-plane me-2"></i>Envoyer le Billet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Changer Siège -->
+    <div class="modal fade" id="changeSeatModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="fas fa-chair me-2"></i>Changer de Siège - <span id="seatBookingId"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p><strong>Siège actuel:</strong> <span id="currentSeat" class="fs-4 text-primary">12A</span></p>
+                    </div>
+                    
+                    <div class="seat-map">
+                        <h6 class="mb-3">Plan des Sièges (Business Class)</h6>
+                        <div class="seats-grid">
+                            <button class="seat available" onclick="selectSeat('10A')">10A</button>
+                            <button class="seat available" onclick="selectSeat('10B')">10B</button>
+                            <button class="seat occupied" disabled>10C</button>
+                            <button class="seat available" onclick="selectSeat('10D')">10D</button>
+                            <br>
+                            <button class="seat available" onclick="selectSeat('11A')">11A</button>
+                            <button class="seat occupied" disabled>11B</button>
+                            <button class="seat available" onclick="selectSeat('11C')">11C</button>
+                            <button class="seat available" onclick="selectSeat('11D')">11D</button>
+                            <br>
+                            <button class="seat selected">12A</button>
+                            <button class="seat available" onclick="selectSeat('12B')">12B</button>
+                            <button class="seat available" onclick="selectSeat('12C')">12C</button>
+                            <button class="seat occupied" disabled>12D</button>
+                        </div>
+                        
+                        <div class="seat-legend mt-3">
+                            <span><span class="seat available"></span> Disponible</span>
+                            <span><span class="seat occupied"></span> Occupé</span>
+                            <span><span class="seat selected"></span> Sélectionné</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <p><strong>Nouveau siège:</strong> <span id="newSeat" class="fs-4 text-success">-</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-info" onclick="saveSeatChange()" id="btnSaveSeat" disabled>
+                        <i class="fas fa-check me-2"></i>Confirmer le Changement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Confirmation Check-in -->
+    <div class="modal fade" id="checkinConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-plane-departure me-2"></i>Confirmer le Check-in</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-check-circle text-success" style="font-size: 64px;"></i>
+                    </div>
+                    <h5 class="text-center mb-3">Effectuer le check-in pour cette réservation ?</h5>
+                    <div class="info-box">
+                        <p><strong>Réservation:</strong> <span id="checkinBookingId"></span></p>
+                        <p><strong>Passager:</strong> <span id="checkinPassengerName"></span></p>
+                        <p><strong>Vol:</strong> <span id="checkinFlightNumber"></span></p>
+                        <p><strong>Siège:</strong> <span id="checkinSeat"></span></p>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Le passager recevra automatiquement sa carte d'embarquement par email.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="processCheckin()">
+                        <i class="fas fa-check me-2"></i>Confirmer le Check-in
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Historique -->
+    <div class="modal fade" id="historyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="fas fa-history me-2"></i>Historique de la Réservation <span id="historyBookingId"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="timeline-container">
+                        <div class="timeline-event">
+                            <div class="timeline-badge bg-success"><i class="fas fa-plus"></i></div>
+                            <div class="timeline-content">
+                                <h6>Réservation créée</h6>
+                                <p class="text-muted mb-1">20 Nov 2024 - 10:15</p>
+                                <p class="mb-0">Réservation initiale créée pour le vol AF-2547</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-badge bg-primary"><i class="fas fa-credit-card"></i></div>
+                            <div class="timeline-content">
+                                <h6>Paiement confirmé</h6>
+                                <p class="text-muted mb-1">20 Nov 2024 - 10:18</p>
+                                <p class="mb-0">Montant: 2,450€ - Visa ****4532</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-badge bg-info"><i class="fas fa-envelope"></i></div>
+                            <div class="timeline-content">
+                                <h6>Billet électronique envoyé</h6>
+                                <p class="text-muted mb-1">20 Nov 2024 - 10:20</p>
+                                <p class="mb-0">Email envoyé à jean.dupont@email.com</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-badge bg-warning"><i class="fas fa-chair"></i></div>
+                            <div class="timeline-content">
+                                <h6>Siège modifié</h6>
+                                <p class="text-muted mb-1">21 Nov 2024 - 15:30</p>
+                                <p class="mb-0">Changement de siège: 15C → 12A</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event">
+                            <div class="timeline-badge bg-success"><i class="fas fa-check"></i></div>
+                            <div class="timeline-content">
+                                <h6>Réservation confirmée</h6>
+                                <p class="text-muted mb-1">22 Nov 2024 - 09:45</p>
+                                <p class="mb-0">Statut mis à jour par l'administrateur</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Confirmation Réservation -->
+    <div class="modal fade" id="confirmBookingModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Confirmer la Réservation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-question-circle text-success" style="font-size: 64px;"></i>
+                    </div>
+                    <h5 class="text-center mb-3">Confirmer cette réservation ?</h5>
+                    <div class="info-box">
+                        <p><strong>ID:</strong> <span id="confirmBookingId"></span></p>
+                        <p><strong>Passager:</strong> <span id="confirmPassengerName"></span></p>
+                        <p><strong>Vol:</strong> <span id="confirmFlightNumber"></span></p>
+                        <p><strong>Montant:</strong> <span id="confirmAmount"></span></p>
+                    </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="confirmSendEmail" checked>
+                        <label class="form-check-label" for="confirmSendEmail">
+                            Envoyer un email de confirmation au client
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="processConfirmBooking()">
+                        <i class="fas fa-check me-2"></i>Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Annuler Réservation -->
+    <div class="modal fade" id="cancelBookingModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Annuler la Réservation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Attention !</strong> Cette action est irréversible.
+                    </div>
+                    
+                    <form id="cancelBookingForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Réservation à annuler</label>
+                            <input type="text" class="form-control" id="cancelBookingId" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Raison de l'annulation <span class="text-danger">*</span></label>
+                            <select class="form-select" id="cancelReason" required>
+                                <option value="">Sélectionner...</option>
+                                <option value="client-request">Demande du client</option>
+                                <option value="flight-cancelled">Vol annulé</option>
+                                <option value="no-payment">Paiement non reçu</option>
+                                <option value="duplicate">Réservation en double</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Commentaire</label>
+                            <textarea class="form-control" id="cancelComment" rows="3"></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="cancelRefund">
+                            <label class="form-check-label" for="cancelRefund">
+                                Initier un remboursement
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="cancelNotify" checked>
+                            <label class="form-check-label" for="cancelNotify">
+                                Notifier le client par email
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" onclick="processCancelBooking()">
+                        <i class="fas fa-times me-2"></i>Confirmer l'Annulation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Re-booking -->
+    <div class="modal fade" id="rebookingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-redo me-2"></i>Re-booking - Proposer un Autre Vol</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Réservation actuelle: <strong id="rebookingCurrentId"></strong> (Annulée)
+                    </div>
+                    
+                    <h6 class="mb-3">Sélectionner un vol alternatif</h6>
+                    <form id="rebookingForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Vol de remplacement <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rebookingFlight" required>
+                                <option value="">Sélectionner un vol...</option>
+                                <option value="AF-2548">AF-2548 - Paris → New York (26 Nov - 10:30)</option>
+                                <option value="AF-2549">AF-2549 - Paris → New York (27 Nov - 14:30)</option>
+                                <option value="EK-0157">EK-0157 - Paris → New York (26 Nov - 20:15)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Classe</label>
+                            <select class="form-select" id="rebookingClass">
+                                <option value="Économique">Économique</option>
+                                <option value="Business" selected>Business (même classe)</option>
+                                <option value="Première">Première Classe</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ajustement tarifaire</label>
+                            <select class="form-select" id="rebookingPriceAdjustment">
+                                <option value="no-charge" selected>Sans frais supplémentaires</option>
+                                <option value="difference">Différence tarifaire si applicable</option>
+                                <option value="discount">Réduction de 10% (geste commercial)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Message au client</label>
+                            <textarea class="form-control" id="rebookingMessage" rows="3" placeholder="Expliquer la raison du re-booking...">Suite à l'annulation de votre vol, nous vous proposons ce vol alternatif.</textarea>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rebookingNotify" checked>
+                            <label class="form-check-label" for="rebookingNotify">
+                                Notifier automatiquement le client par email
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-warning" onclick="processRebooking()">
+                        <i class="fas fa-check me-2"></i>Confirmer le Re-booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Nouvelle Réservation -->
+    <div class="modal fade" id="addBookingModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouvelle Réservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookingForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Prénom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="addFirstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="addLastName" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="addEmail" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="addPhone" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Numéro de Vol <span class="text-danger">*</span></label>
+                                <select class="form-select" id="addFlightNumber" required>
+                                    <option value="">Sélectionner un vol...</option>
+                                    <option value="AF-2547">AF-2547 - Paris → New York</option>
+                                    <option value="EK-0156">EK-0156 - Lyon → Dubaï</option>
+                                    <option value="LH-1234">LH-1234 - Paris → Berlin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Classe <span class="text-danger">*</span></label>
+                                <select class="form-select" id="addClass" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="Économique">Économique</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Première">Première Classe</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Siège</label>
+                                <input type="text" class="form-control" id="addSeat" placeholder="Ex: 12A">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Numéro Passeport</label>
+                                <input type="text" class="form-control" id="addPassport">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewBooking()">
+                        <i class="fas fa-plus me-2"></i>Créer la Réservation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/r-3.0.3/datatables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/5.0.1/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentBookingId = '';
+        let bookingsTable;
+        let selectedNewSeat = '';
+        
+        // Initialisation DataTable avec COLONNE FIXÉE ET BOUTON "Ajouter"
+        $(document).ready(function() {
+            bookingsTable = $('#bookingsTable').DataTable({
+                responsive: false,
+                scrollX: true,
+                scrollCollapse: true,
+                fixedColumns: {
+                    rightColumns: 1
+                },
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        text: '<i class="fas fa-plus me-2"></i>Ajouter Réservation',
+                        className: 'btn btn-primary btn-sm',
+                        action: function(e, dt, node, config) {
+                            openAddBookingModal();
+                        }
+                    },
+                    {
+                        extend: 'copy',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-clipboard"></i> Copier',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-spreadsheet"></i> CSV',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'excel',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-excel"></i> Excel',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    {
+                        extend: 'print',
+                        className: 'btn btn-sm',
+                        text: '<i class="bi bi-printer"></i> Imprimer',
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    },
+                    'colvis'
+                ],
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+                },
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Tout"]],
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: 10 },
+                    { width: "80px", targets: 10 },
+                    { className: "text-center", targets: 10 }
+                ]
+            });
+        });
+        
+        // Graphiques
+        
+        // 1. Courbe d'évolution (2 lignes)
+        const ctxEvolution = document.getElementById('evolutionChart').getContext('2d');
+        new Chart(ctxEvolution, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [
+                    {
+                        label: 'Confirmées',
+                        data: [245, 268, 292, 278, 315, 342, 365, 358, 385, 412, 398, 385],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Annulées',
+                        data: [12, 15, 18, 14, 22, 28, 25, 20, 24, 30, 28, 25],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        
+        // 2. Barres horizontales - Top Destinations
+        const ctxDestinations = document.getElementById('topDestinationsChart').getContext('2d');
+        new Chart(ctxDestinations, {
+            type: 'bar',
+            data: {
+                labels: ['New York', 'Dubaï', 'Tokyo', 'Londres', 'Madrid', 'Berlin', 'Rome', 'Barcelone', 'Abidjan', 'Montréal'],
+                datasets: [{
+                    label: 'Nombre de réservations',
+                    data: [245, 198, 187, 165, 142, 128, 115, 108, 95, 87],
+                    backgroundColor: '#667eea',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true }
+                }
+            }
+        });
+        
+        // 3. Barres empilées - Classes
+        const ctxClass = document.getElementById('classDistributionChart').getContext('2d');
+        new Chart(ctxClass, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                datasets: [
+                    {
+                        label: 'Économique',
+                        data: [145, 158, 172, 165, 185, 198],
+                        backgroundColor: '#3b82f6'
+                    },
+                    {
+                        label: 'Business',
+                        data: [78, 85, 92, 88, 98, 105],
+                        backgroundColor: '#f59e0b'
+                    },
+                    {
+                        label: 'Première',
+                        data: [22, 25, 28, 25, 32, 39],
+                        backgroundColor: '#ef4444'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: 'bottom' } },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true }
+                }
+            }
+        });
+        
+        // ===== FONCTIONS FILTRES =====
+        
+        function applyFilters() {
+            const period = $('#filterPeriod').val();
+            const status = $('#filterStatus').val();
+            const destination = $('#filterDestination').val();
+            const flightClass = $('#filterClass').val();
+            const company = $('#filterCompany').val();
+            
+            bookingsTable.search('').columns().search('').draw();
+            
+            if (status !== 'all') {
+                bookingsTable.column(9).search(status).draw();
+            }
+            
+            console.log('Filtres appliqués:', { period, status, destination, flightClass, company });
+        }
+        
+        function resetFilters() {
+            $('#filterPeriod').val('week');
+            $('#filterStatus').val('all');
+            $('#filterDestination').val('all');
+            $('#filterClass').val('all');
+            $('#filterCompany').val('all');
+            bookingsTable.search('').columns().search('').draw();
+        }
+        
+        // ===== FONCTIONS ACTIONS AVEC MODALS =====
+        
+        function openBookingActionModal(bookingId) {
+            currentBookingId = bookingId;
+            document.getElementById('actionBookingId').textContent = bookingId;
+            const modal = new bootstrap.Modal(document.getElementById('bookingActionModal'));
+            modal.show();
+        }
+        
+        function viewBookingDetails() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('detailBookingId').textContent = currentBookingId;
+            const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+            modal.show();
+        }
+        
+        function editBooking() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('editBookingId').textContent = currentBookingId;
+            const modal = new bootstrap.Modal(document.getElementById('editBookingModal'));
+            modal.show();
+        }
+        
+        function saveBookingEdit() {
+            const firstName = document.getElementById('editFirstName').value;
+            const lastName = document.getElementById('editLastName').value;
+            
+            showSuccessNotification('Réservation ' + currentBookingId + ' modifiée avec succès !');
+            bootstrap.Modal.getInstance(document.getElementById('editBookingModal')).hide();
+        }
+        
+        function changeSeat() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('seatBookingId').textContent = currentBookingId;
+            selectedNewSeat = '';
+            document.getElementById('newSeat').textContent = '-';
+            document.getElementById('btnSaveSeat').disabled = true;
+            
+            const modal = new bootstrap.Modal(document.getElementById('changeSeatModal'));
+            modal.show();
+        }
+        
+        function selectSeat(seat) {
+            selectedNewSeat = seat;
+            document.getElementById('newSeat').textContent = seat;
+            document.getElementById('btnSaveSeat').disabled = false;
+            
+            document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+        
+        function saveSeatChange() {
+            showSuccessNotification('Siège changé de 12A à ' + selectedNewSeat + ' pour la réservation ' + currentBookingId);
+            bootstrap.Modal.getInstance(document.getElementById('changeSeatModal')).hide();
+        }
+        
+        function sendTicket() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal'))?.hide();
+            
+            document.getElementById('ticketBookingId').value = currentBookingId;
+            document.getElementById('ticketPassengerName').value = 'Jean Dupont';
+            
+            const modal = new bootstrap.Modal(document.getElementById('sendTicketModal'));
+            modal.show();
+        }
+        
+        function processSendTicket() {
+            const email = document.getElementById('ticketEmail').value;
+            const message = document.getElementById('ticketMessage').value;
+            
+            if (!email) {
+                showErrorNotification('Veuillez saisir une adresse email.');
+                return;
+            }
+            
+            showSuccessNotification('Billet électronique envoyé à ' + email + ' pour ' + currentBookingId);
+            bootstrap.Modal.getInstance(document.getElementById('sendTicketModal')).hide();
+        }
+        
+        function doCheckin() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('checkinBookingId').textContent = currentBookingId;
+            document.getElementById('checkinPassengerName').textContent = 'Jean Dupont';
+            document.getElementById('checkinFlightNumber').textContent = 'AF-2547';
+            document.getElementById('checkinSeat').textContent = '12A';
+            
+            const modal = new bootstrap.Modal(document.getElementById('checkinConfirmModal'));
+            modal.show();
+        }
+        
+        function processCheckin() {
+            showSuccessNotification('Check-in effectué avec succès pour ' + currentBookingId);
+            
+            const row = document.querySelector(`tr[data-booking-id="${currentBookingId}"]`);
+            if (row) {
+                const statusCell = row.querySelector('.status-booking');
+                statusCell.className = 'status-booking checkedin';
+                statusCell.textContent = 'Check-in fait';
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('checkinConfirmModal')).hide();
+        }
+        
+        function viewHistory() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('historyBookingId').textContent = currentBookingId;
+            const modal = new bootstrap.Modal(document.getElementById('historyModal'));
+            modal.show();
+        }
+        
+        function confirmBooking() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('confirmBookingId').textContent = currentBookingId;
+            document.getElementById('confirmPassengerName').textContent = 'Jean Dupont';
+            document.getElementById('confirmFlightNumber').textContent = 'AF-2547';
+            document.getElementById('confirmAmount').textContent = '2,450€';
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmBookingModal'));
+            modal.show();
+        }
+        
+        function processConfirmBooking() {
+            showSuccessNotification('Réservation ' + currentBookingId + ' confirmée avec succès !');
+            
+            const row = document.querySelector(`tr[data-booking-id="${currentBookingId}"]`);
+            if (row) {
+                const statusCell = row.querySelector('.status-booking');
+                statusCell.className = 'status-booking confirmed';
+                statusCell.textContent = 'Confirmée';
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('confirmBookingModal')).hide();
+        }
+        
+        function cancelBooking() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('cancelBookingId').value = currentBookingId;
+            const modal = new bootstrap.Modal(document.getElementById('cancelBookingModal'));
+            modal.show();
+        }
+        
+        function processCancelBooking() {
+            const reason = document.getElementById('cancelReason').value;
+            
+            if (!reason) {
+                showErrorNotification('Veuillez sélectionner une raison d\'annulation.');
+                return;
+            }
+            
+            showSuccessNotification('Réservation ' + currentBookingId + ' annulée.');
+            
+            const row = document.querySelector(`tr[data-booking-id="${currentBookingId}"]`);
+            if (row) {
+                const statusCell = row.querySelector('.status-booking');
+                statusCell.className = 'status-booking cancelled';
+                statusCell.textContent = 'Annulée';
+            }
+            
+            bootstrap.Modal.getInstance(document.getElementById('cancelBookingModal')).hide();
+        }
+        
+        function rebooking() {
+            bootstrap.Modal.getInstance(document.getElementById('bookingActionModal')).hide();
+            
+            document.getElementById('rebookingCurrentId').textContent = currentBookingId;
+            const modal = new bootstrap.Modal(document.getElementById('rebookingModal'));
+            modal.show();
+        }
+        
+        function processRebooking() {
+            const newFlight = document.getElementById('rebookingFlight').value;
+            
+            if (!newFlight) {
+                showErrorNotification('Veuillez sélectionner un vol alternatif.');
+                return;
+            }
+            
+            showSuccessNotification('Re-booking effectué : ' + currentBookingId + ' → ' + newFlight);
+            bootstrap.Modal.getInstance(document.getElementById('rebookingModal')).hide();
+        }
+        
+        // ===== FONCTIONS GÉNÉRALES =====
+        
+        function openAddBookingModal() {
+            document.getElementById('addBookingForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('addBookingModal'));
+            modal.show();
+        }
+        
+        function addNewBooking() {
+            showSuccessNotification('Nouvelle réservation créée avec succès !');
+            bootstrap.Modal.getInstance(document.getElementById('addBookingModal')).hide();
+        }
+        
+        function exportBookings() {
+            showSuccessNotification('Export de toutes les réservations en cours...');
+        }
+        
+        function showPendingBookings() {
+            bookingsTable.column(9).search('En attente').draw();
+        }
+        
+        function showTodayCheckins() {
+            bookingsTable.column(9).search('Check-in fait').draw();
+        }
+        
+        // Notifications Toast
+        function showSuccessNotification(message) {
+            const toastHTML = `
+                <div class="toast align-items-center text-white bg-success border-0" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-check-circle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.body.lastElementChild;
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+            
+            setTimeout(() => toastElement.remove(), 3500);
+        }
+        
+        function showErrorNotification(message) {
+            const toastHTML = `
+                <div class="toast align-items-center text-white bg-danger border-0" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', toastHTML);
+            const toastElement = document.body.lastElementChild;
+            const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+            toast.show();
+            
+            setTimeout(() => toastElement.remove(), 3500);
+        }
+        
+        // Menu Toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
+    
+    <style>
+        /* Filtres */
+        .filters-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-buttons .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        /* Customer Cell */
+        .customer-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .customer-cell img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
